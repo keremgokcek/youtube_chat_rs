@@ -289,7 +289,7 @@ pub struct PurchaseAmountText {
 pub struct LiveChatMembershipItemRenderer {
     #[serde(flatten)]
     pub message_renderer_base: MessageRendererBase,
-    #[serde(rename = "headerSubText")]
+    #[serde(rename = "headerSubtext")]
     pub header_sub_text: Option<HeaderSubText>,
     #[serde(rename = "authorBadges")]
     pub author_badges: Vec<AuthorBadge>,
