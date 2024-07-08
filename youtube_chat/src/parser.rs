@@ -275,7 +275,7 @@ impl Renderer {
                 renderer.message_renderer_base.timestamp_usec.clone()
             }
         };
-        Utc.timestamp_millis_opt(timestamp_usec.parse::<i64>().ok()?)
+        Utc.timestamp_micros(timestamp_usec.parse::<i64>().ok()?)
             .earliest()
     }
 
