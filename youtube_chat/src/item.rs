@@ -12,6 +12,7 @@ pub struct ChatItem {
     pub is_owner: bool,
     pub is_moderator: bool,
     pub timestamp: Option<DateTime<Utc>>,
+    pub type_name: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

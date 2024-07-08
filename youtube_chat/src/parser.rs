@@ -121,6 +121,7 @@ fn parse_action_to_chat_item(action: Action) -> Option<ChatItem> {
     let message = parse_message(message);
     let timestamp = message_renderer.time_stamp();
     let superchat = message_renderer.superchat();
+    let type_name = message_renderer.type_name();
     let mut chat_item = ChatItem {
         id,
         author: Author {
@@ -136,6 +137,7 @@ fn parse_action_to_chat_item(action: Action) -> Option<ChatItem> {
         is_owner: false,
         is_moderator: false,
         timestamp,
+        type_name,
     };
     message_renderer.process_badge(&mut chat_item);
     Some(chat_item)
@@ -353,6 +355,15 @@ impl Renderer {
                     ),
                 ),
             }),
+        }
+    }
+
+    fn type_name(&self) -> String {
+        match self {
+            Renderer::LiveChatTextMessageRenderer(_) => "text".to_string(),
+            Renderer::LiveChatPaidMessageRenderer(_) => "superchat".to_string(),
+            Renderer::LiveChatMembershipItemRenderer(_) => "membership".to_string(),
+            Renderer::LiveChatPaidStickerRenderer(_) => "sticker".to_string(),
         }
     }
 }
