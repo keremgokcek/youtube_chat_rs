@@ -39,7 +39,7 @@ pub struct EmojiItem {
     #[serde(flatten)]
     pub image_item: Option<ImageItem>,
     pub emoji_text: Option<String>,
-    pub is_custome_emoji: Option<bool>,
+    pub is_custom_emoji: Option<bool>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Badge {

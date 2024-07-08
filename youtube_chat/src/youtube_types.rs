@@ -110,8 +110,8 @@ pub enum MessageRun {
         emoji: Emoji,
         #[serde(rename = "variantIds")]
         variant_ids: Option<Vec<String>>,
-        #[serde(rename = "isCustomeEmoji")]
-        is_custome_emoji: Option<bool>,
+        #[serde(rename = "isCustomEmoji")]
+        is_custom_emoji: Option<bool>,
     },
 }
 

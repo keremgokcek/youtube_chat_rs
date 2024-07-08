@@ -432,7 +432,7 @@ fn parse_message(runs: Vec<MessageRun>) -> Vec<MessageItem> {
             MessageRun::MessageEmoji {
                 emoji,
                 variant_ids: _,
-                is_custome_emoji,
+                is_custom_emoji,
             } => {
                 let thumbnail = emoji.image.thumbnails.into_iter().next();
                 let shortcut = emoji
@@ -443,7 +443,7 @@ fn parse_message(runs: Vec<MessageRun>) -> Vec<MessageItem> {
                     alt: shortcut.clone(),
                 });
 
-                let emoji_text = if is_custome_emoji == Some(true) {
+                let emoji_text = if is_custom_emoji == Some(true) {
                     shortcut
                 } else {
                     Some(emoji.emoji_id)
@@ -452,7 +452,7 @@ fn parse_message(runs: Vec<MessageRun>) -> Vec<MessageItem> {
                 MessageItem::Emoji(EmojiItem {
                     image_item,
                     emoji_text,
-                    is_custome_emoji,
+                    is_custom_emoji,
                 })
             }
         })
