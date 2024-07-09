@@ -298,6 +298,41 @@ pub struct LiveChatMembershipItemRenderer {
 pub struct HeaderSubText {
     pub runs: Vec<MessageRun>,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer {
+    pub id: String,
+    #[serde(rename = "timestampUsec")]
+    pub timestamp_usec: String,
+    #[serde(rename = "authorExternalChannelId")]
+    pub author_external_channel_id: String,
+    pub header: Header,
+}
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Header {
+    #[serde(rename = "liveChatSponsorshipsHeaderRenderer")]
+    pub live_chat_sponsorships_header_renderer: LiveChatSponsorshipsHeaderRenderer,
+}
+#[derive(Serialize, Deserialize, Debug)]
+pub struct LiveChatSponsorshipsHeaderRenderer {
+    #[serde(rename = "authorName")]
+    pub author_name: Option<AuthorName>,
+    #[serde(rename = "authorPhoto")]
+    pub author_photo: AuthorPhoto,
+    #[serde(rename = "primaryText")]
+    pub primary_text: PrimaryText,
+    #[serde(rename = "authorBadges")]
+    pub author_badges: Option<Vec<AuthorBadge>>,
+    #[serde(rename = "contextMenuEndpoint")]
+    pub context_menu_endpoint: ContextMenuEndpoint,
+    #[serde(rename = "contextMenuAccessibility")]
+    pub context_menu_accessibility: Accessibility,
+}
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PrimaryText {
+    pub runs: Vec<MessageRun>,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AddChatItemAction {
     pub item: ActionItem,
@@ -314,6 +349,8 @@ pub struct ActionItem {
     pub live_chat_membership_item_renderer: Option<LiveChatMembershipItemRenderer>,
     #[serde(rename = "liveChatPaidStickerRenderer")]
     pub live_chat_paid_sticker_renderer: Option<LiveChatPaidStickerRenderer>,
+    #[serde(rename = "liveChatSponsorshipsGiftPurchaseAnnouncementRenderer")]
+    pub live_chat_sponsorships_gift_purchase_announcement_renderer: Option<LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer>,
     #[serde(rename = "liveChatViewerEngagementMessageRenderer")]
     pub live_chat_viewer_engagement_message_renderer: Option<serde_json::Value>,
 }

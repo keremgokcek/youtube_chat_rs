@@ -4,7 +4,7 @@ use crate::{
     youtube_types::{
         Action, AuthorBadge, GetLiveChatResponse, LiveChatMembershipItemRenderer,
         LiveChatPaidMessageRenderer, LiveChatPaidStickerRenderer, LiveChatTextMessageRenderer,
-        MessageRun, Thumbnail,
+        LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer, MessageRun, Thumbnail,
     },
 };
 use anyhow::anyhow;
@@ -148,6 +148,7 @@ pub enum Renderer {
     LiveChatPaidMessageRenderer(LiveChatPaidMessageRenderer),
     LiveChatMembershipItemRenderer(LiveChatMembershipItemRenderer),
     LiveChatPaidStickerRenderer(LiveChatPaidStickerRenderer),
+    LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer),
 }
 impl Renderer {
     fn runs(&self) -> Vec<MessageRun> {
@@ -162,6 +163,12 @@ impl Renderer {
                 .map(|header_sub_text| header_sub_text.runs.clone())
                 .unwrap_or(Vec::new()),
             Renderer::LiveChatPaidStickerRenderer(_) => Vec::new(),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(renderer) => renderer
+                .header
+                .live_chat_sponsorships_header_renderer
+                .primary_text
+                .runs
+                .clone(),
         }
     }
 
@@ -188,25 +195,22 @@ impl Renderer {
                 .author_name
                 .clone()
                 .map(|name| name.simple_text),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(renderer) => renderer
+                .header
+                .live_chat_sponsorships_header_renderer
+                .author_name
+                .clone()
+                .map(|name| name.simple_text),
         }
     }
 
     fn id(&self) -> String {
         match self {
-            Renderer::LiveChatTextMessageRenderer(renderer) => {
-                renderer.message_renderer_base.id.clone()
-            }
-            Renderer::LiveChatPaidMessageRenderer(renderer) => renderer
-                .live_chat_text_message_renderer
-                .message_renderer_base
-                .id
-                .clone(),
-            Renderer::LiveChatMembershipItemRenderer(renderer) => {
-                renderer.message_renderer_base.id.clone()
-            }
-            Renderer::LiveChatPaidStickerRenderer(renderer) => {
-                renderer.message_renderer_base.id.clone()
-            }
+            Renderer::LiveChatTextMessageRenderer(renderer) => renderer.message_renderer_base.id.clone(),
+            Renderer::LiveChatPaidMessageRenderer(renderer) => renderer.live_chat_text_message_renderer.message_renderer_base.id.clone(),
+            Renderer::LiveChatMembershipItemRenderer(renderer) => renderer.message_renderer_base.id.clone(),
+            Renderer::LiveChatPaidStickerRenderer(renderer) => renderer.message_renderer_base.id.clone(),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(renderer) => renderer.id.clone(),
         }
     }
 
@@ -233,6 +237,12 @@ impl Renderer {
                 .author_photo
                 .thumbnails
                 .clone(),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(renderer) => renderer
+                .header
+                .live_chat_sponsorships_header_renderer
+                .author_photo
+                .thumbnails
+                .clone(),
         }
     }
 
@@ -255,25 +265,19 @@ impl Renderer {
                 .message_renderer_base
                 .author_external_channel_id
                 .clone(),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(renderer) => renderer
+                .author_external_channel_id
+                .clone(),
         }
     }
 
     fn time_stamp(&self) -> Option<DateTime<Utc>> {
         let timestamp_usec = match self {
-            Renderer::LiveChatTextMessageRenderer(renderer) => {
-                renderer.message_renderer_base.timestamp_usec.clone()
-            }
-            Renderer::LiveChatPaidMessageRenderer(renderer) => renderer
-                .live_chat_text_message_renderer
-                .message_renderer_base
-                .timestamp_usec
-                .clone(),
-            Renderer::LiveChatMembershipItemRenderer(renderer) => {
-                renderer.message_renderer_base.timestamp_usec.clone()
-            }
-            Renderer::LiveChatPaidStickerRenderer(renderer) => {
-                renderer.message_renderer_base.timestamp_usec.clone()
-            }
+            Renderer::LiveChatTextMessageRenderer(renderer) => renderer.message_renderer_base.timestamp_usec.clone(),
+            Renderer::LiveChatPaidMessageRenderer(renderer) => renderer.live_chat_text_message_renderer.message_renderer_base.timestamp_usec.clone(),
+            Renderer::LiveChatMembershipItemRenderer(renderer) => renderer.message_renderer_base.timestamp_usec.clone(),
+            Renderer::LiveChatPaidStickerRenderer(renderer) => renderer.message_renderer_base.timestamp_usec.clone(),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(renderer) => renderer.timestamp_usec.clone(),
         };
         Utc.timestamp_micros(timestamp_usec.parse::<i64>().ok()?)
             .earliest()
@@ -281,20 +285,11 @@ impl Renderer {
 
     fn author_badge(&self) -> Option<Vec<AuthorBadge>> {
         match self {
-            Renderer::LiveChatTextMessageRenderer(renderer) => {
-                renderer.message_renderer_base.author_badges.clone()
-            }
-            Renderer::LiveChatPaidMessageRenderer(renderer) => renderer
-                .live_chat_text_message_renderer
-                .message_renderer_base
-                .author_badges
-                .clone(),
-            Renderer::LiveChatMembershipItemRenderer(renderer) => {
-                renderer.message_renderer_base.author_badges.clone()
-            }
-            Renderer::LiveChatPaidStickerRenderer(renderer) => {
-                renderer.message_renderer_base.author_badges.clone()
-            }
+            Renderer::LiveChatTextMessageRenderer(renderer) => renderer.message_renderer_base.author_badges.clone(),
+            Renderer::LiveChatPaidMessageRenderer(renderer) => renderer.live_chat_text_message_renderer.message_renderer_base.author_badges.clone(),
+            Renderer::LiveChatMembershipItemRenderer(renderer) => renderer.message_renderer_base.author_badges.clone(),
+            Renderer::LiveChatPaidStickerRenderer(renderer) => renderer.message_renderer_base.author_badges.clone(),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(renderer) => renderer.header.live_chat_sponsorships_header_renderer.author_badges.clone(),
         }
     }
 
@@ -355,6 +350,7 @@ impl Renderer {
                     ),
                 ),
             }),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(_) => None,
         }
     }
 
@@ -364,6 +360,7 @@ impl Renderer {
             Renderer::LiveChatPaidMessageRenderer(_) => "superchat".to_string(),
             Renderer::LiveChatMembershipItemRenderer(_) => "membership".to_string(),
             Renderer::LiveChatPaidStickerRenderer(_) => "sticker".to_string(),
+            Renderer::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(_) => "gift".to_string(),
         }
     }
 }
@@ -387,6 +384,11 @@ impl From<LiveChatPaidStickerRenderer> for Renderer {
         Self::LiveChatPaidStickerRenderer(value)
     }
 }
+impl From<LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer> for Renderer {
+    fn from(value: LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer) -> Self {
+        Self::LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer(value)
+    }
+}
 fn renderer_from_action(action: Action) -> Option<Renderer> {
     let item = action.add_chat_item_action?.item;
     if let Some(renderer) = item.live_chat_text_message_renderer {
@@ -396,6 +398,8 @@ fn renderer_from_action(action: Action) -> Option<Renderer> {
     } else if let Some(renderer) = item.live_chat_membership_item_renderer {
         Some(renderer.into())
     } else if let Some(renderer) = item.live_chat_paid_sticker_renderer {
+        Some(renderer.into())
+    } else if let Some(renderer) = item.live_chat_sponsorships_gift_purchase_announcement_renderer {
         Some(renderer.into())
     } else {
         None
